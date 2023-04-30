@@ -13,14 +13,27 @@ class Post(models.Model):
     * `publish` - поле для даты и времени публикации поста, тип `DateTimeField`, транслируемый в `DATETIME` в SQL
     * `created` - поле для даты и времени создания поста , тип `DateTimeField`, транслируемый в `DATETIME` в SQL
     * `updated` - поле для даты и времени обновления поста , тип `DateTimeField`, транслируемый в `DATETIME` в SQL
+    * `status` - поле для статуса поста, тип `CharField`, транслируемый в столбец `VARCHAR` в SQL
     """
+    class Status(models.TextChoices):
+        """
+        Класс, определящий статус поста (enum-класс)
+        * DRAFT - статус черновика
+        * PUBLISHED - статус опубликованного поста
+        """
+        DRAFT = 'DF', 'Draft'
+        PUBLISHED = 'PB', 'Published'
+    
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
+    status = models.CharField(max_length=2,
+                              choices=Status.choices,
+                              default=Status.DRAFT)
+    
     class Meta:
         """
         Класс, определяющий метаданные модели
