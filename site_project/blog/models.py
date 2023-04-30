@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -9,6 +9,7 @@ class Post(models.Model):
     Модель, позволяющая хранить посты блога в базе данных. 
     * `title` - поле для заголовка поста, тип `CharField`, транслируемый в столбец `VARCHAR` в SQL
     * `slug` - поле для короткой метки, тип `SlugField`, транслируемый в столбец `VARCHAR` в SQL
+    * `author` - поле для взаимосвязи один-ко-многим (один автор для множества постов), тип `ForeignKey`, внешний ключ в SQL
     * `body` - поле для тела поста, тип `TextField`, транслируемый в столбец `Text` в SQL
     * `publish` - поле для даты и времени публикации поста, тип `DateTimeField`, транслируемый в `DATETIME` в SQL
     * `created` - поле для даты и времени создания поста , тип `DateTimeField`, транслируемый в `DATETIME` в SQL
@@ -26,6 +27,9 @@ class Post(models.Model):
     
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
+    author = models.ForeignKey(User,
+                               on_delete=models.CASCADE,
+                               related_name='blog_posts')
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
