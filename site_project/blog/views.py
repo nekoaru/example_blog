@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_list_or_404
+from django.shortcuts import render, get_object_or_404
 from .models import Post
 
 # Create your views here.
@@ -15,7 +15,7 @@ def post_detail(request, id):
     """
     Представление детальной информации одиночного поста
     """
-    post = get_list_or_404(Post,
+    post = get_object_or_404(Post,
                             id=id,
                             status=Post.Status.PUBLISHED)
     return render(request,
