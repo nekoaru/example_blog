@@ -1,7 +1,20 @@
 from django.db import models
+from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.contrib.auth.models import User
 # Create your models here.
+
+
+class PublishedManager(models.Manager):
+    """
+    Модельный менеджер для опубликованных постов 
+    """
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Метод для возврата запроса с фильтором по статусу
+        """
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
 
 class Post(models.Model):
@@ -15,6 +28,9 @@ class Post(models.Model):
     * `created` - поле для даты и времени создания поста , тип `DateTimeField`, транслируемый в `DATETIME` в SQL
     * `updated` - поле для даты и времени обновления поста , тип `DateTimeField`, транслируемый в `DATETIME` в SQL
     * `status` - поле для статуса поста, тип `CharField`, транслируемый в столбец `VARCHAR` в SQL
+    
+    * `objects` - модельный менеджер по-умолчанию
+    * `published` - модельный менеджер для опубликованных постов
     """
     class Status(models.TextChoices):
         """
@@ -24,7 +40,7 @@ class Post(models.Model):
         """
         DRAFT = 'DF', 'Draft'
         PUBLISHED = 'PB', 'Published'
-    
+
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
     author = models.ForeignKey(User,
@@ -37,7 +53,9 @@ class Post(models.Model):
     status = models.CharField(max_length=2,
                               choices=Status.choices,
                               default=Status.DRAFT)
-    
+    objects = models.Manager()
+    published = PublishedManager()
+
     class Meta:
         """
         Класс, определяющий метаданные модели
@@ -48,6 +66,6 @@ class Post(models.Model):
         indexes = [
             models.Index(fields=['-publish']),
         ]
-    
+
     def __str__(self) -> str:
         return self.title
