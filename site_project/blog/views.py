@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from django.http import Http404
+from django.shortcuts import render, get_list_or_404
 from .models import Post
 
 # Create your views here.
@@ -16,10 +15,9 @@ def post_detail(request, id):
     """
     Представление детальной информации одиночного поста
     """
-    try:
-        post = Post.published.get(id=id)
-    except Post.DoesNotExist as post_not_found_exc:
-        raise Http404("No Post found") from post_not_found_exc
+    post = get_list_or_404(Post,
+                            id=id,
+                            status=Post.Status.PUBLISHED)
     return render(request,
                   'blog/post/detail.html',
                   {'post': post})
