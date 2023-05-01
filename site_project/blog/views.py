@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
 from .models import Post
 
 # Create your views here.
@@ -6,7 +7,12 @@ def post_list(request):
     """
     Представление для всех опубликованных постов
     """
-    posts = Post.published.all()
+    NUM_POSTS = 5
+    
+    post_list = Post.published.all()
+    paginator = Paginator(post_list, NUM_POSTS)
+    page_number = request.GET.get('page', 1)
+    posts = paginator.page(page_number)
     return render(request,
                   'blog/post/list.html',
                   {'posts': posts})
